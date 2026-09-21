@@ -24,6 +24,7 @@ jobs:
         run: |
           python scripts/check_gate0.py
           python scripts/check_gate0_r2.py
+          python scripts/check_gate0_r3.py
 
       - name: Ensure repository has no whitespace errors
         run: git diff --check HEAD^ HEAD || git diff --check

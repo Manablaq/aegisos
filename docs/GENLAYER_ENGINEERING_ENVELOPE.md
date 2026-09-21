@@ -174,3 +174,29 @@ Gate 0 is NOT complete until the following are certified:
 - Bradbury read-only schema/admission behavior for the prototype.
 
 Until these are closed, production implementation and deployment remain blocked.
+
+## 11. Live Bradbury R3 baseline
+
+Gate-0 R3-D1 performed a live read-only probe against both:
+
+- `https://rpc-bradbury.genlayer.com`;
+- `https://rpc.testnet-chain.genlayer.com`.
+
+The probe demonstrated:
+
+- chain ID `4221` on both endpoints;
+- byte-identical code for the probed system contracts;
+- current block gas limit `100000000`;
+- official Bradbury FeeManager proxy implementation parity;
+- `GENPerTimeUnit()` supported;
+- `storageUnitPrice()` supported;
+- `quoteGasPrice()` unsupported/reverted;
+- `messageFeeParamsBudgetFloor()` unsupported/reverted.
+
+Therefore AegisOS v1 MUST NOT assume the newer v0.6 fee-policy surface exists
+on Bradbury.
+
+The observed block gas limit is not an AegisOS deployment budget.
+
+Exact deployment admission remains unresolved until a compact candidate exists
+and its complete encoded transaction can be measured.

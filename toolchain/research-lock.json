@@ -27,10 +27,10 @@
     "status": "CANDIDATE"
   },
   "candidate_toolchain": {
-    "genlayer_py": "a3dc35e04898e3889cbfa855bcaf7d2664675b8f",
+    "genlayer_py": "cf421edc0d20e567cc5a3b4da198fce61f1e579f",
     "genlayer_test": "9c09578b143905471fb0657dd53bdaf18da8e35f",
-    "genvm_linter": "28450e665666300fc648dbe495110dfd0cb6a7b4",
-    "status": "CANDIDATE"
+    "genvm_linter": "928bb51c42da8ff2512d81465d3e704f599aca47",
+    "status": "CANDIDATE_BRADBURY_STABLE_ALIGNED"
   },
   "settlement_architecture": {
     "model": "ONE_GENLAYER_IC_PLUS_MINIMAL_EVM_SETTLEMENT_VAULT",
@@ -40,5 +40,20 @@
     "receiver_idempotency_required": true,
     "live_bradbury_certification_required": true,
     "status": "CANDIDATE"
+  },
+  "bradbury_runtime_baseline": {
+    "evidence_file": "verification/bradbury/gate0-r3-d1-readonly.json",
+    "evidence_sha256": "57219cfb6d8f0f19cd1c2ec5c2b40876d8322ee694742ad5a7b4c2b6c93d3620",
+    "chain_id": 4221,
+    "observed_block_gas_limit": 100000000,
+    "consensus_main": "0x0112Bf6e83497965A5fdD6Dad1E447a6E004271D",
+    "fee_manager": "0xF205868bf5db79d2162843742D18D0900A9E462a",
+    "fee_manager_implementation": "0x31199772507933c5Ad94Da28ab7B02bf9c41069C",
+    "stable_fee_views_supported": true,
+    "v06_fee_views_supported": false,
+    "genlayer_networks_commit": "f9a30ed9536e56255cd2d7f8579a4d5dcc81ffd0",
+    "bradbury_consensus_source": "9c686087963551277fc2dce0354c2b1a7050b4b2",
+    "deployment_family": "v0.5:9c68608",
+    "status": "LIVE_READONLY_VERIFIED"
   }
 }

@@ -41,10 +41,10 @@ if runner != {
 
 toolchain = lock.get("candidate_toolchain", {})
 if toolchain != {
-    "genlayer_py": "a3dc35e04898e3889cbfa855bcaf7d2664675b8f",
+    "genlayer_py": "cf421edc0d20e567cc5a3b4da198fce61f1e579f",
     "genlayer_test": "9c09578b143905471fb0657dd53bdaf18da8e35f",
-    "genvm_linter": "28450e665666300fc648dbe495110dfd0cb6a7b4",
-    "status": "CANDIDATE",
+    "genvm_linter": "928bb51c42da8ff2512d81465d3e704f599aca47",
+    "status": "CANDIDATE_BRADBURY_STABLE_ALIGNED",
 }:
     raise SystemExit("candidate toolchain mismatch")
 

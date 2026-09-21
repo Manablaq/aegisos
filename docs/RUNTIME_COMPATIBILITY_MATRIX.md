@@ -41,3 +41,16 @@ AegisOS v1 must not depend on:
 - synchronous cross-IC state reads for critical correctness;
 - accepted-stage economic messages;
 - direct value-bearing internal messages for user principal settlement.
+
+## Live Bradbury correction — Gate 0 R3
+
+R3-D1 established that the currently observed Bradbury FeeManager is from the
+stable deployment family and does not expose the newer v0.6 fee-policy views.
+
+Accordingly:
+
+- v0.6 fee-aware submission behavior is NOT a Bradbury v1 assumption;
+- simulator support for v0.6 fee-aware calls is NOT live-network evidence;
+- the stable Bradbury client path remains the baseline;
+- any future Bradbury migration must be detected by a fresh read-only probe
+  before release tooling changes transaction encoding.
