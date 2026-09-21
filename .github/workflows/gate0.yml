@@ -25,6 +25,40 @@ jobs:
           python scripts/check_gate0.py
           python scripts/check_gate0_r2.py
           python scripts/check_gate0_r3.py
+          python scripts/check_toolchain_lock.py
 
       - name: Ensure repository has no whitespace errors
         run: git diff --check HEAD^ HEAD || git diff --check
+
+  toolchain-realization:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Pin pip
+        run: python -m pip install --disable-pip-version-check pip==26.2.1
+
+      - name: Install reproducible toolchain
+        run: |
+          python -m pip install             --disable-pip-version-check             --no-input             -r requirements-lock.txt
+
+      - name: Verify dependency consistency
+        run: python -m pip check
+
+      - name: Verify exact toolchain provenance
+        run: python scripts/check_toolchain_lock.py --runtime
+
+      - name: Smoke test GenLayer CLIs
+        run: |
+          pytest --version
+          gltest --help >/tmp/gltest-help.txt
+          genvm-lint --help >/tmp/genvm-lint-help.txt
+          test -s /tmp/gltest-help.txt
+          test -s /tmp/genvm-lint-help.txt

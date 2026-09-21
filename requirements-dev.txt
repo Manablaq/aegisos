@@ -1,4 +1,11 @@
-# Intentionally not frozen during early Gate 0.
+# AegisOS direct GenLayer development dependencies.
 #
-# Production GenLayer dependencies MUST NOT be added here by version label alone.
-# Gate 0 will pin exact immutable commits after compatibility certification.
+# These are pinned by immutable Git commit.
+# The complete transitive environment is frozen in requirements-lock.txt.
+#
+# Production toolchain status remains UNFROZEN until the actual AegisOS
+# contract passes all runtime and Bradbury release gates.
+
+genlayer-py @ git+https://github.com/genlayerlabs/genlayer-py.git@cf421edc0d20e567cc5a3b4da198fce61f1e579f
+genlayer-test @ git+https://github.com/genlayerlabs/genlayer-testing-suite.git@9c09578b143905471fb0657dd53bdaf18da8e35f
+genvm-linter @ git+https://github.com/genlayerlabs/genvm-linter.git@928bb51c42da8ff2512d81465d3e704f599aca47

@@ -1,0 +1,52 @@
+{
+  "schema": "AEGISOS_GATE0_R4_REPRODUCIBILITY_V1",
+  "status": "REPRODUCIBLE_CANDIDATE_NOT_PRODUCTION_FROZEN",
+  "python": {
+    "series": "3.12",
+    "local_observed_version": "3.12.14",
+    "local_observed_architecture": "arm64"
+  },
+  "candidate_toolchain": {
+    "genlayer_py": {
+      "version": "0.18.0",
+      "commit": "cf421edc0d20e567cc5a3b4da198fce61f1e579f"
+    },
+    "genlayer_test": {
+      "version": "0.29.2",
+      "commit": "9c09578b143905471fb0657dd53bdaf18da8e35f"
+    },
+    "genvm_linter": {
+      "version": "0.11.0",
+      "commit": "928bb51c42da8ff2512d81465d3e704f599aca47"
+    }
+  },
+  "reproducibility": {
+    "primary_environment": ".venv",
+    "second_environment": "/tmp/aegisos-r4-r3-repro/venv",
+    "freeze_line_count": 55,
+    "primary_freeze_sha256": "14db5fb5adbf7ae14575c19f9779d7c2c996d20d44192a79e28bf601b649d20c",
+    "second_freeze_sha256": "14db5fb5adbf7ae14575c19f9779d7c2c996d20d44192a79e28bf601b649d20c",
+    "full_freeze_parity": true,
+    "pip_check_primary": true,
+    "pip_check_second": true,
+    "exact_vcs_revision_primary": true,
+    "exact_vcs_revision_second": true,
+    "import_smoke_primary": true,
+    "import_smoke_second": true,
+    "cli_smoke_primary": true,
+    "cli_smoke_second": true
+  },
+  "preserved_evidence": {
+    "requirements_lock": "requirements-lock.txt",
+    "requirements_lock_sha256": "14db5fb5adbf7ae14575c19f9779d7c2c996d20d44192a79e28bf601b649d20c",
+    "r4_r3_freeze": "verification/toolchain/r4-r3-freeze.txt",
+    "r4_r3_freeze_sha256": "14db5fb5adbf7ae14575c19f9779d7c2c996d20d44192a79e28bf601b649d20c",
+    "r4_r3_install_report": "verification/toolchain/r4-r3-install-report.json",
+    "r4_r3_install_report_sha256": "74f151ca84b9f89f3e50f1fadca14a9558922baa34c377f915a91cdc53f7473e"
+  },
+  "notes": {
+    "cli_wrapper_binary_hash_parity_required": false,
+    "cli_wrapper_reason": "Generated entrypoint wrappers contain environment-specific absolute interpreter paths.",
+    "production_toolchain_frozen": false
+  }
+}

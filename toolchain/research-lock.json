@@ -55,5 +55,20 @@
     "bradbury_consensus_source": "9c686087963551277fc2dce0354c2b1a7050b4b2",
     "deployment_family": "v0.5:9c68608",
     "status": "LIVE_READONLY_VERIFIED"
+  },
+  "toolchain_reproducibility": {
+    "python_series": "3.12",
+    "local_python_version": "3.12.14",
+    "local_architecture": "arm64",
+    "requirements_lock": "requirements-lock.txt",
+    "requirements_lock_sha256": "14db5fb5adbf7ae14575c19f9779d7c2c996d20d44192a79e28bf601b649d20c",
+    "freeze_line_count": 55,
+    "independent_environment_count": 2,
+    "full_freeze_parity": true,
+    "pip_check": "PASS",
+    "exact_vcs_revision_gate": "PASS",
+    "import_smoke_gate": "PASS",
+    "cli_smoke_gate": "PASS",
+    "status": "REPRODUCIBLE_CANDIDATE"
   }
 }
