@@ -1,0 +1,20 @@
+{
+  "schema": "AEGISOS_GATE0_RESEARCH_LOCK_V1",
+  "status": "UNFROZEN",
+  "target_network": {
+    "name": "GenLayer Bradbury Testnet",
+    "chain_id": 4221,
+    "genlayer_rpc": "https://rpc-bradbury.genlayer.com",
+    "consensus_main": "0x0112Bf6e83497965A5fdD6Dad1E447a6E004271D"
+  },
+  "research_revisions": {
+    "genlayer_py": "dd25ef7f43e99a14b8fe42a64e01374845ad4d2d",
+    "genvm_v0_2_16_tag_commit": "387e1a66e920cb2dfadcdce40ab2d28da02efd1e",
+    "genvm_executor_compatibility_commit": "75e4d1fd5945aadea065f6928e60155ffca63797"
+  },
+  "known_prior_bradbury_runner_reference": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6",
+  "production_toolchain_frozen": false,
+  "production_runner_frozen": false,
+  "deployment_budget_frozen": false,
+  "payout_transport_frozen": false
+}

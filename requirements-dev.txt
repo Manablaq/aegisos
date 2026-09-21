@@ -1,0 +1,4 @@
+# Intentionally not frozen during early Gate 0.
+#
+# Production GenLayer dependencies MUST NOT be added here by version label alone.
+# Gate 0 will pin exact immutable commits after compatibility certification.

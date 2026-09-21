@@ -1,0 +1,27 @@
+name: gate0
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify Gate-0 baseline
+        run: python scripts/check_gate0.py
+
+      - name: Ensure repository has no whitespace errors
+        run: git diff --check HEAD^ HEAD || git diff --check
