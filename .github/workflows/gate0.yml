@@ -26,6 +26,7 @@ jobs:
           python scripts/check_gate0_r2.py
           python scripts/check_gate0_r3.py
           python scripts/check_toolchain_lock.py
+          python scripts/check_runner_baseline.py
 
       - name: Ensure repository has no whitespace errors
         run: git diff --check HEAD^ HEAD || git diff --check
@@ -62,3 +63,107 @@ jobs:
           genvm-lint --help >/tmp/genvm-lint-help.txt
           test -s /tmp/gltest-help.txt
           test -s /tmp/genvm-lint-help.txt
+
+  runner-realization:
+    runs-on: ubuntu-latest
+    env:
+      GENVM_VERSION: "v0.2.16"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Pin pip
+        run: python -m pip install --disable-pip-version-check pip==26.2.1
+
+      - name: Install reproducible toolchain
+        run: |
+          python -m pip install \
+            --disable-pip-version-check \
+            --no-input \
+            -r requirements-lock.txt
+
+      - name: Verify toolchain provenance
+        run: |
+          python -m pip check
+          python scripts/check_toolchain_lock.py --runtime
+          python scripts/check_runner_baseline.py
+
+      - name: Download exact GenVM runner bundle
+        run: genvm-lint download --version v0.2.16
+
+      - name: Verify exact GenVM bundle
+        run: |
+          BUNDLE="$HOME/.cache/genvm-linter/genvm-universal-v0.2.16.tar.xz"
+          test -s "$BUNDLE"
+          ACTUAL="$(sha256sum "$BUNDLE" | awk '{print $1}')"
+          EXPECTED="4f0b358ec98ec148be9b95cdfb0f0e1a6cbe64da0194fdfac3fffc6f5d1d93e2"
+          echo "EXPECTED_BUNDLE_SHA=$EXPECTED"
+          echo "ACTUAL_BUNDLE_SHA=$ACTUAL"
+          test "$ACTUAL" = "$EXPECTED"
+
+      - name: Run exact runner validation
+        run: |
+          genvm-lint check \
+            verification/runner/runner-probe.py \
+            --json \
+            > /tmp/runner-check.json
+
+          genvm-lint typecheck \
+            verification/runner/runner-probe.py \
+            --json \
+            > /tmp/runner-typecheck.json
+
+          genvm-lint schema \
+            verification/runner/runner-probe.py \
+            --json \
+            > /tmp/runner-schema.json
+
+      - name: Compare runner results with preserved baseline
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          pairs = (
+              (
+                  Path("/tmp/runner-check.json"),
+                  Path("verification/runner/r5-r2-check.json"),
+                  "check",
+              ),
+              (
+                  Path("/tmp/runner-typecheck.json"),
+                  Path("verification/runner/r5-r2-typecheck.json"),
+                  "typecheck",
+              ),
+              (
+                  Path("/tmp/runner-schema.json"),
+                  Path("verification/runner/r5-r2-schema.json"),
+                  "schema",
+              ),
+          )
+
+          for actual_path, expected_path, label in pairs:
+              actual = json.loads(
+                  actual_path.read_text(encoding="utf-8")
+              )
+              expected = json.loads(
+                  expected_path.read_text(encoding="utf-8")
+              )
+
+              if actual != expected:
+                  raise SystemExit(
+                      f"{label} result differs from preserved baseline"
+                  )
+
+              print(
+                  f"RUNNER_{label.upper()}_PARITY=PASS"
+              )
+
+          print("AEGISOS_LINUX_RUNNER_REALIZATION=PASS")
+          PY

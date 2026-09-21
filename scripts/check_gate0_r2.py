@@ -35,7 +35,9 @@ runner = lock.get("candidate_runner", {})
 if runner != {
     "id": "py-genlayer",
     "hash": "1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6",
-    "status": "CANDIDATE",
+    "genvm_version": "v0.2.16",
+    "genvm_bundle_sha256": "4f0b358ec98ec148be9b95cdfb0f0e1a6cbe64da0194fdfac3fffc6f5d1d93e2",
+    "status": "V0_2_16_DEFAULT_AND_CURRENT_DOCS_VERIFIED",
 }:
     raise SystemExit("candidate runner mismatch")
 

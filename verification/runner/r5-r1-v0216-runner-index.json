@@ -1,0 +1,16 @@
+{
+  "bundle": "/Users/mralbert/.cache/genvm-linter/genvm-universal-v0.2.16.tar.xz",
+  "docs_runner": "1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6",
+  "docs_runner_present": true,
+  "linter_default_runner": "1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6",
+  "runner_count": 4,
+  "runners_in_archive_order": [
+    "132536jbnxkd1axfxg5rpfr5b60cr11adm2y4r90hgn0l59qsp9w",
+    "15qfivjvy80800rh998pcxmd2m8va1wq2qzqhz850n8ggcr4i9q0",
+    "1j12s63yfjpva9ik2xgnffgrs6v44y1f52jvj9w7xvdn7qckd379",
+    "1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6"
+  ],
+  "schema": "AEGISOS_R5_R1_V0216_RUNNER_INDEX_V1",
+  "stable_runner": "1j12s63yfjpva9ik2xgnffgrs6v44y1f52jvj9w7xvdn7qckd379",
+  "stable_runner_present": true
+}

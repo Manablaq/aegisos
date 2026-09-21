@@ -24,7 +24,9 @@
   "candidate_runner": {
     "id": "py-genlayer",
     "hash": "1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6",
-    "status": "CANDIDATE"
+    "genvm_version": "v0.2.16",
+    "genvm_bundle_sha256": "4f0b358ec98ec148be9b95cdfb0f0e1a6cbe64da0194fdfac3fffc6f5d1d93e2",
+    "status": "V0_2_16_DEFAULT_AND_CURRENT_DOCS_VERIFIED"
   },
   "candidate_toolchain": {
     "genlayer_py": "cf421edc0d20e567cc5a3b4da198fce61f1e579f",
@@ -70,5 +72,18 @@
     "import_smoke_gate": "PASS",
     "cli_smoke_gate": "PASS",
     "status": "REPRODUCIBLE_CANDIDATE"
+  },
+  "runner_verification": {
+    "baseline_file": "verification/runner/r5-runner-baseline.json",
+    "probe_file": "verification/runner/runner-probe.py",
+    "probe_sha256": "8c6ce8c285322268dc2996262822f8a31a42566fd7d8d78de9c2c827d603f865",
+    "runner_index_sha256": "5cd081e136ea9e0e637bdfa93416fbd50df7fe903c66ecc6b8dd0c5985b648e0",
+    "validate_sha256": "6cb32b7592022c8dea41519345dc2f8173128c751945112adaa5f8eaf48a7b28",
+    "schema_sha256": "54522efbde5abe9240b1888cab914c78cf93f4820c07aea6758e4cfad22bb923",
+    "typecheck_sha256": "23dda178344a1e4734041ea64d4582355199dfbb1be74dbf515bc4295d0af35d",
+    "check_sha256": "c26315db7bb0fe11bc512d16aa7521918a609218bae32b499f03cf423fac3953",
+    "pyright_version": "1.1.414",
+    "local_runner_gate": "PASS",
+    "production_runner_frozen": false
   }
 }
