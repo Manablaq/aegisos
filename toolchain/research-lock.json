@@ -16,5 +16,29 @@
   "production_toolchain_frozen": false,
   "production_runner_frozen": false,
   "deployment_budget_frozen": false,
-  "payout_transport_frozen": false
+  "payout_transport_frozen": false,
+  "official_docs_revision": {
+    "repository": "genlayerlabs/genlayer-docs",
+    "commit": "1cd8e2d11f743141b441be91ed65f321139814cc"
+  },
+  "candidate_runner": {
+    "id": "py-genlayer",
+    "hash": "1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6",
+    "status": "CANDIDATE"
+  },
+  "candidate_toolchain": {
+    "genlayer_py": "a3dc35e04898e3889cbfa855bcaf7d2664675b8f",
+    "genlayer_test": "9c09578b143905471fb0657dd53bdaf18da8e35f",
+    "genvm_linter": "28450e665666300fc648dbe495110dfd0cb6a7b4",
+    "status": "CANDIDATE"
+  },
+  "settlement_architecture": {
+    "model": "ONE_GENLAYER_IC_PLUS_MINIMAL_EVM_SETTLEMENT_VAULT",
+    "principal_in_genvm": false,
+    "publication_value": 0,
+    "publication_permissionless": true,
+    "receiver_idempotency_required": true,
+    "live_bradbury_certification_required": true,
+    "status": "CANDIDATE"
+  }
 }
