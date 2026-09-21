@@ -1,0 +1,36 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pyright/
+.mypy_cache/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.keystore
+*.secret
+secrets/
+private/
+
+# macOS / editors
+.DS_Store
+.idea/
+.vscode/
+
+# Build / generated
+build/
+dist/
+coverage/
+htmlcov/
+artifacts/tmp/
+artifacts/private/
+
+# Local GenLayer runtime artifacts
+.genlayer/
+.gltest/
