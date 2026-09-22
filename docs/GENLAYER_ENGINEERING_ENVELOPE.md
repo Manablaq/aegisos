@@ -198,5 +198,7 @@ on Bradbury.
 
 The observed block gas limit is not an AegisOS deployment budget.
 
-Exact deployment admission remains unresolved until a compact candidate exists
-and its complete encoded transaction can be measured.
+A compact canonical candidate now exists and is locally certified, but exact
+deployment admission remains unresolved until its complete encoded transaction
+is measured against the Bradbury admission envelope. No live deployment or
+finality claim is implied by the local certification.

@@ -64,6 +64,190 @@ jobs:
           test -s /tmp/gltest-help.txt
           test -s /tmp/genvm-lint-help.txt
 
+
+  canonical-contract-certification:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Pin pip
+        run: python -m pip install --disable-pip-version-check pip==26.2.1
+
+      - name: Install reproducible toolchain
+        run: |
+          python -m pip install \
+            --disable-pip-version-check \
+            --no-input \
+            -r requirements-lock.txt
+
+      - name: Verify dependency and toolchain provenance
+        run: |
+          python -m pip check
+          python scripts/check_toolchain_lock.py --runtime
+          python scripts/check_runner_baseline.py
+
+      - name: Download exact GenVM runner bundle
+        run: genvm-lint download --version v0.2.16
+
+      - name: Verify canonical implementation hashes
+        run: |
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+
+          expected = {
+              Path("contracts/aegis_core.py"): "26401d771d3c554dc848792a44c1df35c56955bae5fd4070b3a6273992621a51",
+              Path("tests/test_aegis_core_direct.py"): "7b1abe97566b78ecb5a2fca8867145223c93a87cc4613325bb35e7157f3e4f1a",
+          }
+
+          for path, wanted in expected.items():
+              actual = hashlib.sha256(path.read_bytes()).hexdigest()
+              print(f"{path} SHA256={actual}")
+              if actual != wanted:
+                  raise SystemExit(
+                      f"SHA-256 mismatch for {path}"
+                  )
+
+          print("CANONICAL_IMPLEMENTATION_HASH_GATE=PASS")
+          PY
+
+      - name: Run canonical static certification
+        env:
+          GENVM_VERSION: v0.2.16
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+
+          genvm-lint lint contracts/aegis_core.py
+          genvm-lint validate contracts/aegis_core.py
+          genvm-lint check contracts/aegis_core.py
+
+          genvm-lint typecheck \
+            contracts/aegis_core.py \
+            --strict \
+            --json \
+            > /tmp/aegis-strict.json
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          payload = json.loads(
+              Path("/tmp/aegis-strict.json").read_text(
+                  encoding="utf-8"
+              )
+          )
+
+          diagnostics = payload.get("diagnostics", [])
+
+          print("STRICT_JSON_OK=" + str(payload.get("ok")))
+          print(
+              "STRICT_DIAGNOSTIC_COUNT="
+              + str(len(diagnostics))
+          )
+
+          if payload.get("ok") is not True or diagnostics:
+              raise SystemExit(
+                  "strict typecheck did not produce "
+                  "zero diagnostics"
+              )
+
+          print("STRICT_ZERO_DIAGNOSTIC_GATE=PASS")
+          PY
+
+          genvm-lint typecheck contracts/aegis_core.py
+
+          genvm-lint schema \
+            contracts/aegis_core.py \
+            --output /tmp/aegis-abi.json
+
+          python - <<'PY'
+          import hashlib
+          from pathlib import Path
+
+          path = Path("/tmp/aegis-abi.json")
+          actual = hashlib.sha256(
+              path.read_bytes()
+          ).hexdigest()
+
+          expected = "818a3e7c907fdc41c4c7e265c7777de8cf527232c503e84f8426c7ac6abbb37a"
+
+          print("EXPECTED_ABI_SHA256=" + expected)
+          print("ACTUAL_ABI_SHA256=" + actual)
+
+          if actual != expected:
+              raise SystemExit(
+                  "canonical ABI SHA-256 mismatch"
+              )
+
+          print("CANONICAL_STATIC_CERTIFICATION=PASS")
+          PY
+
+      - name: Run eight canonical Direct Mode proofs
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+        run: |
+          set -euo pipefail
+
+          pytest \
+            -p no:cacheprovider \
+            -q \
+            -s \
+            tests/test_aegis_core_direct.py \
+            | tee /tmp/aegis-direct-mode.txt
+
+          python - <<'PY'
+          import re
+          from pathlib import Path
+
+          text = Path(
+              "/tmp/aegis-direct-mode.txt"
+          ).read_text(
+              encoding="utf-8"
+          )
+
+          markers = (
+              "R60_CASE_AUTHORITY_ACCEPT=PASS",
+              "R60_CASE_FOREIGN_SENDER_REJECT=PASS",
+              "R60_CASE_FOREIGN_ORIGIN_REJECT=PASS",
+              "R60_CASE_CREATOR_AGREEMENT=PASS",
+              "R60_CASE_COUNTERPARTY_AGREEMENT=PASS",
+              "R60_CASE_REPAIR_AGREEMENT=PASS",
+              "R60_CASE_VALIDATOR_DISAGREEMENT=PASS",
+              "R60_CASE_INVALID_RESULT_REJECTION=PASS",
+          )
+
+          for marker in markers:
+              count = text.count(marker)
+              print(f"{marker} COUNT={count}")
+
+              if count != 1:
+                  raise SystemExit(
+                      "runtime proof marker count mismatch: "
+                      + marker
+                  )
+
+          if re.search(
+              r"(^|\s)8 passed(?:\s|$)",
+              text,
+          ) is None:
+              raise SystemExit(
+                  "pytest did not report exactly "
+                  "the expected eight passing proofs"
+              )
+
+          print("RUNTIME_PROOF_COUNT=8")
+          print("CANONICAL_RUNTIME_CERTIFICATION=PASS")
+          PY
+
   runner-realization:
     runs-on: ubuntu-latest
     env:

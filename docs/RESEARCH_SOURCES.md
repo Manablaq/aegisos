@@ -1,7 +1,7 @@
 # Gate-0 Research Sources
 
 This file records implementation-sensitive sources consulted before AegisOS
-production coding begins.
+production coding began, and preserves that pre-implementation research baseline.
 
 ## Official GenLayer repositories
 

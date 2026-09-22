@@ -6,21 +6,26 @@ AegisOS is a GenLayer Intelligent Contract protocol for autonomous agreements, e
 
 ## Current status
 
-**Gate 0 — GenLayer engineering-envelope certification.**
+**Gate 0 — certified implementation candidate; live release admission remains pending.**
 
-Production Intelligent Contract implementation has intentionally not started.
+The canonical AegisOS Core implementation now exists at
+`contracts/aegis_core.py`.
 
-AegisOS will first freeze:
+Current local certification binds that file to SHA-256
+`26401d771d3c554dc848792a44c1df35c56955bae5fd4070b3a6273992621a51` and verifies it against the pinned
+Bradbury-compatible GenVM `v0.2.16` execution surface.
 
-- the exact Bradbury-compatible execution surface;
-- deployment and resource budgets;
-- consensus and evidence rules;
-- economic/finality invariants;
-- recovery and liveness guarantees;
-- the exact pinned toolchain;
-- reproducible reviewer and release gates.
+The repository-relative Direct Mode suite is
+`tests/test_aegis_core_direct.py`. It covers bound-authority enforcement,
+direct-origin rejection, exact `CREATOR` and `COUNTERPARTY` consequences,
+the non-settling `REPAIR` path, validator disagreement, and malformed/error
+result rejection.
 
-The development rule is:
+This local certification does **not** claim live Bradbury deployment,
+validator finality, production toolchain freeze, deployment-budget freeze,
+or payout-transport freeze. Those remain separate release gates.
+
+The development rule remains:
 
 > Research and certify the execution envelope first. Implement inside that envelope second. Deploy only after reproducible admission checks pass.
 

@@ -163,15 +163,42 @@ for key in (
             f"{key} must remain false after R3"
         )
 
-contract_files = [
-    p
-    for p in (ROOT / "contracts").rglob("*")
-    if p.is_file() and p.name != ".gitkeep"
-]
+CANONICAL_CONTRACT_PATH = Path(
+    "contracts/aegis_core.py"
+)
+CANONICAL_CONTRACT = ROOT / CANONICAL_CONTRACT_PATH
+EXPECTED_CANONICAL_CONTRACT_SHA256 = (
+    "26401d771d3c554dc848792a44c1df35c56955bae5fd4070b3a6273992621a51"
+)
 
-if contract_files:
+contract_files = sorted(
+    (
+        p
+        for p in (ROOT / "contracts").rglob("*")
+        if p.is_file() and p.name != ".gitkeep"
+    ),
+    key=lambda p: p.as_posix(),
+)
+
+if contract_files != [CANONICAL_CONTRACT]:
     raise SystemExit(
-        "production contract code exists before Gate-0 freeze"
+        "unexpected Intelligent Contract surface: "
+        + ", ".join(
+            str(p.relative_to(ROOT))
+            for p in contract_files
+        )
+    )
+
+actual_contract_sha256 = hashlib.sha256(
+    CANONICAL_CONTRACT.read_bytes()
+).hexdigest()
+
+if (
+    actual_contract_sha256
+    != EXPECTED_CANONICAL_CONTRACT_SHA256
+):
+    raise SystemExit(
+        "canonical AegisOS contract SHA-256 mismatch"
     )
 
 print("AEGISOS_GATE0_R3_BASELINE=PASS")
@@ -182,4 +209,13 @@ print("STABLE_FEE_SURFACE=CONFIRMED")
 print("V06_FEE_VIEWS_SUPPORTED=NO")
 print("TOOLCHAIN_CANDIDATE=BRADBURY_STABLE_ALIGNED")
 print("PRODUCTION_TOOLCHAIN_FROZEN=NO")
-print("PRODUCTION_CONTRACT_PRESENT=NO")
+print("CANONICAL_CONTRACT_PRESENT=YES")
+print(
+    "CANONICAL_CONTRACT_PATH="
+    + CANONICAL_CONTRACT_PATH.as_posix()
+)
+print(
+    "CANONICAL_CONTRACT_SHA256="
+    + actual_contract_sha256
+)
+print("PRODUCTION_CONTRACT_FROZEN=NO")

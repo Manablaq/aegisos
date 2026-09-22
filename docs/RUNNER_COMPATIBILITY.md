@@ -64,18 +64,15 @@ is not the AegisOS candidate.
 
 `PRODUCTION_RUNNER_FROZEN=NO`
 
-Runner compatibility is now verified locally, but production freeze still
-requires the actual AegisOS Intelligent Contract to pass:
+The canonical AegisOS candidate now passes the local runner-dependent gates:
+lint, semantic validation, schema extraction, strict/basic typecheck, and the
+eight Direct Mode regression proofs, including validator disagreement and
+malformed/error-result rejection.
 
-1. lint;
-2. semantic validation;
-3. schema extraction;
-4. typecheck;
-5. Direct Mode regression tests;
-6. adversarial consensus tests;
-7. exact source/payload budget gates;
-8. Bradbury read-only admission preflight;
-9. live Bradbury deployment and finality verification.
+This is local execution evidence, not live validator consensus or finality.
+Production runner freeze remains blocked until the remaining release gates pass,
+including exact deployment-payload admission measurement, Bradbury read-only
+admission preflight, and live Bradbury deployment/finality verification.
 
 The verification fixture is:
 

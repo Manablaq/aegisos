@@ -96,22 +96,15 @@ The R4-R3 pip report SHA-256 is:
 
 ## Production freeze remains blocked
 
-R4 proves that the toolchain candidate can be reproduced.
-
-It does NOT yet prove that the toolchain is sufficient for the final AegisOS
-contract.
+R4 proves that the toolchain candidate can be reproduced. Subsequent local
+certification of the canonical AegisOS candidate confirms that this pinned
+toolchain can execute its GenVM lint/validation, strict/basic typecheck, schema
+extraction, stable ABI check, and eight Direct Mode regression proofs.
 
 `PRODUCTION_TOOLCHAIN_FROZEN=NO`
 
-Production freeze remains blocked until the actual compact AegisOS candidate
-passes:
-
-1. GenVM lint;
-2. typecheck;
-3. schema extraction;
-4. Direct Mode;
-5. adversarial/security regression tests;
-6. contract size budget;
-7. exact encoded deployment-payload measurement;
-8. Bradbury read-only admission preflight;
-9. live Bradbury finality verification.
+That local result does not freeze the production toolchain and does not prove
+live validator consensus or finality. Production freeze remains blocked on the
+remaining release gates, including exact encoded deployment-payload
+measurement, Bradbury read-only admission preflight, and live Bradbury finality
+verification.
