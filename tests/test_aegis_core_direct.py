@@ -16,8 +16,8 @@ CANDIDATE = (
 )
 
 EXPECTED_CANDIDATE_SHA = (
-    "26401d771d3c554dc848792a44c1df35"
-    "c56955bae5fd4070b3a6273992621a51"
+    "df7f279e651681a24fdb3b0f71079edb"
+    "64ebdf45a0e5c398806804f07fb3d21b"
 )
 
 SDK_VERSION = "v0.2.16"
@@ -547,34 +547,36 @@ def test_direct_authority_rejects_foreign_sender():
     )
 
 
-def test_direct_authority_rejects_foreign_origin():
+def test_direct_authority_accepts_matching_sender_with_divergent_origin_runtime_compatibility():
     vm = VMContext()
     vm.warp(BASE_ISO)
-
     with vm.activate():
         env = _new_accepted_contract(
             vm,
-            "authority-foreign-origin",
+            "authority-runtime-origin-divergence",
         )
-
         actors = env["actors"]
-
         _set_actor(
             vm,
             actors["primary"],
             actors["intruder"],
         )
-
-        with vm.expect_revert(
-            "DIRECT_AUTHORITY_TRANSACTION_REQUIRED"
-        ):
-            _attest_call(
-                env,
-                AUTHORITY_ROLE_PRIMARY,
-            )
-
+        _attest_call(
+            env,
+            AUTHORITY_ROLE_PRIMARY,
+        )
+        attestation = env["contract"].get_attestation(
+            env["agreement_id"],
+            AUTHORITY_ROLE_PRIMARY,
+        )
+        assert bool(attestation.present) is True
+        assert int(attestation.generation) == GENERATION
+        assert (
+            attestation.authority.as_hex.lower()
+            == _hex_address(actors["primary"])
+        )
     print(
-        "R60_CASE_FOREIGN_ORIGIN_REJECT=PASS"
+        "R94_R9_CASE_MATCHING_SENDER_DIVERGENT_ORIGIN_ACCEPT=PASS"
     )
 
 
@@ -850,4 +852,71 @@ def test_validator_rejects_invalid_results_and_leader_error():
 
     print(
         "R60_CASE_INVALID_RESULT_REJECTION=PASS"
+    )
+
+
+def test_direct_authority_rejects_nonempty_call_stack():
+    vm = VMContext()
+    vm.warp(BASE_ISO)
+
+    with vm.activate():
+        env = _new_accepted_contract(
+            vm,
+            "authority-nonempty-stack",
+        )
+
+        actors = env["actors"]
+
+        _set_actor(
+            vm,
+            actors["primary"],
+            actors["intruder"],
+        )
+
+        from genlayer import gl
+
+        assert "stack" in gl.message_raw
+
+        assert len(
+            gl.message_raw[
+                "stack"
+            ]
+        ) == 0
+
+        caller = (
+            gl.message.contract_address
+        )
+
+        gl.message_raw[
+            "stack"
+        ] = [
+            caller,
+        ]
+
+        assert len(
+            gl.message_raw[
+                "stack"
+            ]
+        ) == 1
+
+        with vm.expect_revert(
+            "DIRECT_AUTHORITY_TRANSACTION_REQUIRED"
+        ):
+            _attest_call(
+                env,
+                AUTHORITY_ROLE_PRIMARY,
+            )
+
+        assert len(
+            gl.message_raw[
+                "stack"
+            ]
+        ) == 1
+
+        gl.message_raw[
+            "stack"
+        ] = []
+
+    print(
+        "R94_R13B_CASE_NONEMPTY_STACK_REJECT=PASS"
     )

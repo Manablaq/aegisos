@@ -35,7 +35,7 @@
     "status": "CANDIDATE_BRADBURY_STABLE_ALIGNED"
   },
   "settlement_architecture": {
-    "model": "ONE_GENLAYER_IC_PLUS_MINIMAL_EVM_SETTLEMENT_VAULT",
+    "model": "CORE_PLUS_STATELESS_DIGEST_HELPER_PLUS_MINIMAL_EVM_SETTLEMENT_VAULT",
     "principal_in_genvm": false,
     "publication_value": 0,
     "publication_permissionless": true,

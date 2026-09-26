@@ -166,21 +166,38 @@ for key in (
 CANONICAL_CONTRACT_PATH = Path(
     "contracts/aegis_core.py"
 )
+CANONICAL_HELPER_PATH = Path(
+    "contracts/aegis_digest_helper.py"
+)
 CANONICAL_CONTRACT = ROOT / CANONICAL_CONTRACT_PATH
+CANONICAL_HELPER = ROOT / CANONICAL_HELPER_PATH
 EXPECTED_CANONICAL_CONTRACT_SHA256 = (
-    "26401d771d3c554dc848792a44c1df35c56955bae5fd4070b3a6273992621a51"
+    "df7f279e651681a24fdb3b0f71079edb64ebdf45a0e5c398806804f07fb3d21b"
+)
+EXPECTED_CANONICAL_HELPER_SHA256 = (
+    "624129618401b57c8547e6b4c4b14528fbce154a9f8e00a621596221b7864d73"
 )
 
 contract_files = sorted(
     (
         p
         for p in (ROOT / "contracts").rglob("*")
-        if p.is_file() and p.name != ".gitkeep"
+        if (
+            p.is_file()
+            and p.name != ".gitkeep"
+            and "__pycache__" not in p.parts
+            and p.suffix not in {".pyc", ".pyo"}
+        )
     ),
     key=lambda p: p.as_posix(),
 )
 
-if contract_files != [CANONICAL_CONTRACT]:
+expected_contract_files = [
+    CANONICAL_CONTRACT,
+    CANONICAL_HELPER,
+]
+
+if contract_files != expected_contract_files:
     raise SystemExit(
         "unexpected Intelligent Contract surface: "
         + ", ".join(
@@ -192,13 +209,18 @@ if contract_files != [CANONICAL_CONTRACT]:
 actual_contract_sha256 = hashlib.sha256(
     CANONICAL_CONTRACT.read_bytes()
 ).hexdigest()
+actual_helper_sha256 = hashlib.sha256(
+    CANONICAL_HELPER.read_bytes()
+).hexdigest()
 
-if (
-    actual_contract_sha256
-    != EXPECTED_CANONICAL_CONTRACT_SHA256
-):
+if actual_contract_sha256 != EXPECTED_CANONICAL_CONTRACT_SHA256:
     raise SystemExit(
-        "canonical AegisOS contract SHA-256 mismatch"
+        "canonical AegisOS core SHA-256 mismatch"
+    )
+
+if actual_helper_sha256 != EXPECTED_CANONICAL_HELPER_SHA256:
+    raise SystemExit(
+        "canonical AegisOS digest helper SHA-256 mismatch"
     )
 
 print("AEGISOS_GATE0_R3_BASELINE=PASS")
@@ -217,5 +239,13 @@ print(
 print(
     "CANONICAL_CONTRACT_SHA256="
     + actual_contract_sha256
+)
+print(
+    "CANONICAL_HELPER_PATH="
+    + CANONICAL_HELPER_PATH.as_posix()
+)
+print(
+    "CANONICAL_HELPER_SHA256="
+    + actual_helper_sha256
 )
 print("PRODUCTION_CONTRACT_FROZEN=NO")

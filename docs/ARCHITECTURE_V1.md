@@ -4,7 +4,7 @@ Status: **GATE-0 CANDIDATE**
 
 ## Objective
 
-AegisOS is a single flagship GenLayer Intelligent Contract protocol for:
+AegisOS is a flagship GenLayer protocol centered on a stateful Core Intelligent Contract plus a stateless pure digest helper for:
 
 - autonomous agreements;
 - multi-party mandates;
@@ -42,6 +42,12 @@ AegisOS Core is intended to contain:
 Product-level templates are encoded as bounded policy data rather than separate
 contract implementations.
 
+### Stateless pure digest helper
+
+The R94 implementation splits deterministic digest construction into `AegisPureDigestHelper`. The helper has no mutable protocol state, no nondeterministic execution, no adjudication authority, no economic authority, and no upgrade role. The Core binds the helper address and supplies every digest input explicitly.
+
+This split was Direct Mode certified and separately exercised through a real supported-runtime cross-contract path.
+
 ## No runtime module dependency
 
 The first Bradbury release MUST NOT require:
@@ -50,6 +56,8 @@ The first Bradbury release MUST NOT require:
 - child-contract factories;
 - synchronous cross-IC reads for critical state;
 - undocumented runtime behavior.
+
+The stateless digest helper does not relax this rule: it is not a source of critical state. It is a deterministic pure-computation boundary whose cross-contract semantics are independently runtime-tested.
 
 If a future Bradbury runtime is proven to support safer modularity, that can be
 evaluated as a separate version.

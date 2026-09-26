@@ -27,6 +27,7 @@ jobs:
           python scripts/check_gate0_r3.py
           python scripts/check_toolchain_lock.py
           python scripts/check_runner_baseline.py
+          python scripts/check_supported_runtime_bundle.py
 
       - name: Ensure repository has no whitespace errors
         run: git diff --check HEAD^ HEAD || git diff --check
@@ -103,8 +104,10 @@ jobs:
           from pathlib import Path
 
           expected = {
-              Path("contracts/aegis_core.py"): "26401d771d3c554dc848792a44c1df35c56955bae5fd4070b3a6273992621a51",
-              Path("tests/test_aegis_core_direct.py"): "7b1abe97566b78ecb5a2fca8867145223c93a87cc4613325bb35e7157f3e4f1a",
+              Path("contracts/aegis_core.py"): "df7f279e651681a24fdb3b0f71079edb64ebdf45a0e5c398806804f07fb3d21b",
+              Path("contracts/aegis_digest_helper.py"): "624129618401b57c8547e6b4c4b14528fbce154a9f8e00a621596221b7864d73",
+              Path("tests/test_aegis_core_direct.py"): "b3368fe053abe0fc1e2290b8b839f173b31e126ccc94a3e14ff3f2676962cab6",
+              Path("tests/conftest.py"): "a5841fda3e29ec53714f0385ec5b217f19cb203a1ed19db89ad391e60f4c22d9",
           }
 
           for path, wanted in expected.items():
@@ -128,69 +131,48 @@ jobs:
           genvm-lint lint contracts/aegis_core.py
           genvm-lint validate contracts/aegis_core.py
           genvm-lint check contracts/aegis_core.py
-
-          genvm-lint typecheck \
-            contracts/aegis_core.py \
-            --strict \
-            --json \
-            > /tmp/aegis-strict.json
-
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          payload = json.loads(
-              Path("/tmp/aegis-strict.json").read_text(
-                  encoding="utf-8"
-              )
-          )
-
-          diagnostics = payload.get("diagnostics", [])
-
-          print("STRICT_JSON_OK=" + str(payload.get("ok")))
-          print(
-              "STRICT_DIAGNOSTIC_COUNT="
-              + str(len(diagnostics))
-          )
-
-          if payload.get("ok") is not True or diagnostics:
-              raise SystemExit(
-                  "strict typecheck did not produce "
-                  "zero diagnostics"
-              )
-
-          print("STRICT_ZERO_DIAGNOSTIC_GATE=PASS")
-          PY
-
+          genvm-lint typecheck contracts/aegis_core.py --strict --json > /tmp/aegis-core-strict.json
           genvm-lint typecheck contracts/aegis_core.py
+          genvm-lint schema contracts/aegis_core.py --output /tmp/aegis-core-abi.json
 
-          genvm-lint schema \
-            contracts/aegis_core.py \
-            --output /tmp/aegis-abi.json
+          genvm-lint lint contracts/aegis_digest_helper.py
+          genvm-lint validate contracts/aegis_digest_helper.py
+          genvm-lint check contracts/aegis_digest_helper.py
+          genvm-lint typecheck contracts/aegis_digest_helper.py --strict --json > /tmp/aegis-helper-strict.json
+          genvm-lint typecheck contracts/aegis_digest_helper.py
+          genvm-lint schema contracts/aegis_digest_helper.py --output /tmp/aegis-helper-abi.json
 
           python - <<'PY'
           import hashlib
+          import json
           from pathlib import Path
 
-          path = Path("/tmp/aegis-abi.json")
-          actual = hashlib.sha256(
-              path.read_bytes()
-          ).hexdigest()
+          strict_files = (
+              Path("/tmp/aegis-core-strict.json"),
+              Path("/tmp/aegis-helper-strict.json"),
+          )
 
-          expected = "818a3e7c907fdc41c4c7e265c7777de8cf527232c503e84f8426c7ac6abbb37a"
+          for path in strict_files:
+              payload = json.loads(path.read_text(encoding="utf-8"))
+              diagnostics = payload.get("diagnostics", [])
+              if payload.get("ok") is not True or diagnostics:
+                  raise SystemExit(f"strict typecheck failed: {path}")
 
-          print("EXPECTED_ABI_SHA256=" + expected)
-          print("ACTUAL_ABI_SHA256=" + actual)
+          expected_abis = {
+              Path("/tmp/aegis-core-abi.json"): "ac223ea6fbf3e4bc2ec04a162391bfe166598d248ece2aa31618086b6499517b",
+              Path("/tmp/aegis-helper-abi.json"): "c213636e5e5f3030198f26ada579bfa8e1376b7398f6c6044c38c23b1df61310",
+          }
 
-          if actual != expected:
-              raise SystemExit(
-                  "canonical ABI SHA-256 mismatch"
-              )
+          for path, wanted in expected_abis.items():
+              actual = hashlib.sha256(path.read_bytes()).hexdigest()
+              print(f"{path.name} SHA256={actual}")
+              if actual != wanted:
+                  raise SystemExit(f"ABI SHA-256 mismatch: {path}")
 
           print("CANONICAL_STATIC_CERTIFICATION=PASS")
           PY
 
-      - name: Run eight canonical Direct Mode proofs
+      - name: Run nine canonical Direct Mode proofs
         env:
           PYTHONDONTWRITEBYTECODE: "1"
           PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
@@ -208,43 +190,30 @@ jobs:
           import re
           from pathlib import Path
 
-          text = Path(
-              "/tmp/aegis-direct-mode.txt"
-          ).read_text(
-              encoding="utf-8"
-          )
+          text = Path("/tmp/aegis-direct-mode.txt").read_text(encoding="utf-8")
 
           markers = (
               "R60_CASE_AUTHORITY_ACCEPT=PASS",
               "R60_CASE_FOREIGN_SENDER_REJECT=PASS",
-              "R60_CASE_FOREIGN_ORIGIN_REJECT=PASS",
+              "R94_R9_CASE_MATCHING_SENDER_DIVERGENT_ORIGIN_ACCEPT=PASS",
               "R60_CASE_CREATOR_AGREEMENT=PASS",
               "R60_CASE_COUNTERPARTY_AGREEMENT=PASS",
               "R60_CASE_REPAIR_AGREEMENT=PASS",
               "R60_CASE_VALIDATOR_DISAGREEMENT=PASS",
               "R60_CASE_INVALID_RESULT_REJECTION=PASS",
+              "R94_R13B_CASE_NONEMPTY_STACK_REJECT=PASS",
           )
 
           for marker in markers:
               count = text.count(marker)
               print(f"{marker} COUNT={count}")
-
               if count != 1:
-                  raise SystemExit(
-                      "runtime proof marker count mismatch: "
-                      + marker
-                  )
+                  raise SystemExit("runtime proof marker count mismatch: " + marker)
 
-          if re.search(
-              r"(^|\s)8 passed(?:\s|$)",
-              text,
-          ) is None:
-              raise SystemExit(
-                  "pytest did not report exactly "
-                  "the expected eight passing proofs"
-              )
+          if re.search(r"(^|\s)9 passed(?:\s|$)", text) is None:
+              raise SystemExit("pytest did not report exactly the expected nine passing proofs")
 
-          print("RUNTIME_PROOF_COUNT=8")
+          print("RUNTIME_PROOF_COUNT=9")
           print("CANONICAL_RUNTIME_CERTIFICATION=PASS")
           PY
 

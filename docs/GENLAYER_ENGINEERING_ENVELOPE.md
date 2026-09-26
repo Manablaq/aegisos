@@ -78,6 +78,8 @@ The researched runner exposes:
 
 Use of a capability in this list still requires a project-specific runtime test.
 
+AegisOS R94 uses one narrowly scoped cross-contract view boundary to a stateless digest helper. The helper holds no critical state and performs no nondeterministic reasoning. Its direct-call and nested-call semantics are covered by the Phase-1 supported-runtime proof; this does not authorize stateful synchronous cross-IC dependencies.
+
 ## 5. Consensus design requirement
 
 AegisOS will keep nondeterministic reasoning separate from deterministic

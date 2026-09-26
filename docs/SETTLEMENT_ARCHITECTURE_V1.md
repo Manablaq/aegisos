@@ -4,16 +4,15 @@ Status: **GATE-0 CANDIDATE — LIVE BRADBURY CERTIFICATION REQUIRED**
 
 ## 1. Design decision
 
-AegisOS will contain exactly one GenLayer Intelligent Contract.
+AegisOS v1 uses two GenLayer Intelligent Contracts with sharply separated roles: the stateful AegisOS Core and a stateless pure digest helper.
 
-Economic custody is intentionally separated into a minimal EVM settlement vault.
+The helper owns no protocol state, value, evidence authority, or adjudication authority. It deterministically computes canonical digest material for the Core.
 
-This is not a second Intelligent Contract and it contains no AI, evidence
-interpretation, policy reasoning, or adjudication.
+Economic custody remains intentionally separated into a minimal EVM settlement vault. The vault is not a GenLayer Intelligent Contract and contains no AI, evidence interpretation, policy reasoning, or adjudication.
 
 Responsibilities are deliberately separated:
 
-### AegisOS Intelligent Contract
+### AegisOS Core Intelligent Contract
 
 Owns:
 
@@ -27,6 +26,12 @@ Owns:
 - finalized decisions;
 - decision nonces;
 - reputation/accounting metadata.
+
+### AegisOS Pure Digest Helper
+
+Owns no mutable protocol state. It only exposes deterministic view methods used by the Core to compute evidence-pair and agreement/decision digests from explicit inputs.
+
+The helper cannot choose an outcome, mutate an agreement, hold escrow, or authorize settlement.
 
 ### Settlement Vault
 
@@ -60,30 +65,33 @@ been published.
 
 The target deployment sequence is:
 
-1. deploy AegisOS Core with:
+1. deploy and finalize the stateless AegisOS Pure Digest Helper;
+
+2. deploy AegisOS Core with:
+   - the finalized helper address bound in the constructor;
    - no vault bound;
    - one temporary bootstrap address;
    - all user agreement activation disabled while unbound;
 
-2. finalize AegisOS deployment and obtain its canonical address;
+3. finalize AegisOS Core deployment and obtain its canonical address;
 
-3. deploy the Settlement Vault with:
-   - AegisOS address as immutable controller;
+4. deploy the Settlement Vault with:
+   - AegisOS Core address as immutable controller;
    - no administrative adjudication authority;
 
-4. call AegisOS `bind_vault(vault_address)` exactly once;
+5. call AegisOS `bind_vault(vault_address)` exactly once;
 
-5. AegisOS verifies through the EVM interface that:
+6. AegisOS verifies through the EVM interface that:
    - `vault.controller()` equals the AegisOS/ghost address;
    - the vault reports the expected protocol/domain identifier;
 
-6. AegisOS stores the vault address;
+7. AegisOS stores the vault address;
 
-7. AegisOS permanently clears the bootstrap address;
+8. AegisOS permanently clears the bootstrap address;
 
-8. further `bind_vault` calls are impossible.
+9. further `bind_vault` calls are impossible.
 
-The bootstrap address is NOT a GenVM upgrader.
+The digest helper is not an upgrader, settlement authority, evidence authority, or state source. The bootstrap address is NOT a GenVM upgrader.
 
 No upgrader is added to the GenVM root.
 

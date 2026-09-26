@@ -6,24 +6,18 @@ AegisOS is a GenLayer Intelligent Contract protocol for autonomous agreements, e
 
 ## Current status
 
-**Gate 0 — certified implementation candidate; live release admission remains pending.**
+**R94 repository-promotion candidate — local Direct Mode and supported-runtime certification complete; live Bradbury release admission remains pending.**
 
-The canonical AegisOS Core implementation now exists at
-`contracts/aegis_core.py`.
+The canonical implementation is split across:
 
-Current local certification binds that file to SHA-256
-`26401d771d3c554dc848792a44c1df35c56955bae5fd4070b3a6273992621a51` and verifies it against the pinned
-Bradbury-compatible GenVM `v0.2.16` execution surface.
+- `contracts/aegis_core.py` — stateful AegisOS Core, SHA-256 `df7f279e651681a24fdb3b0f71079edb64ebdf45a0e5c398806804f07fb3d21b`;
+- `contracts/aegis_digest_helper.py` — stateless pure digest helper, SHA-256 `624129618401b57c8547e6b4c4b14528fbce154a9f8e00a621596221b7864d73`.
 
-The repository-relative Direct Mode suite is
-`tests/test_aegis_core_direct.py`. It covers bound-authority enforcement,
-direct-origin rejection, exact `CREATOR` and `COUNTERPARTY` consequences,
-the non-settling `REPAIR` path, validator disagreement, and malformed/error
-result rejection.
+The repository Direct Mode suite is `tests/test_aegis_core_direct.py` with its canonical fixture in `tests/conftest.py`. It contains nine proofs covering bound-sender authority enforcement, divergent-origin top-level compatibility, nonempty-call-stack rejection, exact `CREATOR` and `COUNTERPARTY` consequences, the non-settling `REPAIR` path, validator disagreement, and malformed/error result rejection.
 
-This local certification does **not** claim live Bradbury deployment,
-validator finality, production toolchain freeze, deployment-budget freeze,
-or payout-transport freeze. Those remain separate release gates.
+A repository-normalized, Python-AST-identical copy of the Phase-1 multi-validator supported-runtime harness is preserved under `verification/supported_runtime/`. The bundle README records both the exact executed Phase-1 test SHA-256 and the normalized repository test SHA-256. Phase 1 proved the foreign-sender `BOUND_AUTHORITY_ONLY` rejection and real nested `call_contract` stack semantics on local chain ID `61999`, with all proof writes finalized.
+
+This certification does **not** claim Bradbury deployment, Bradbury validator finality, production toolchain freeze, deployment-budget freeze, or payout-transport freeze. Those remain separate release gates.
 
 The development rule remains:
 
