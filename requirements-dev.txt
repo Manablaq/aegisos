@@ -1,10 +1,7 @@
-# AegisOS direct GenLayer development dependencies.
+# AegisOS reproducible Intelligent Contract development dependencies.
 #
-# These are pinned by immutable Git commit.
+# Direct GenLayer dependencies are pinned to immutable Git revisions.
 # The complete transitive environment is frozen in requirements-lock.txt.
-#
-# Production toolchain status remains UNFROZEN until the actual AegisOS
-# contract passes all runtime and Bradbury release gates.
 
 genlayer-py @ git+https://github.com/genlayerlabs/genlayer-py.git@cf421edc0d20e567cc5a3b4da198fce61f1e579f
 genlayer-test @ git+https://github.com/genlayerlabs/genlayer-testing-suite.git@9c09578b143905471fb0657dd53bdaf18da8e35f

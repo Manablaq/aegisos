@@ -1,1 +1,0 @@
-{"ok":true,"schema":{"ctor":{"params":[],"kwparams":{}},"methods":{"get_value":{"params":[],"kwparams":{},"readonly":true,"ret":"int"},"set_value":{"params":[["value","int"]],"kwparams":{},"readonly":false,"ret":"any","payable":false}}}}
